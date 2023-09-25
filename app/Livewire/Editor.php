@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Sound;
 use App\Models\Sprite;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
 class Editor extends Component
@@ -76,7 +77,7 @@ class Editor extends Component
 
     public function setCode(string $code): void
     {
-        $this->project->code = $code;
+        $this->project->code = Hash::make($code);
         $this->project->save();
 
         session()->put('unlocked', true);
@@ -84,8 +85,10 @@ class Editor extends Component
 
     public function unlock(string $code): void
     {
-        session()->put('unlocked', $this->project->code == $code);
-        $this->redirectRoute('show-project', $this->project);
+        if (Hash::check($code, $this->project->code)) {
+            session()->put('unlocked', true);
+            $this->redirectRoute('show-project', $this->project);
+        }
     }
 
     public function render(): View
