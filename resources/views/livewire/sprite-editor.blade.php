@@ -6,7 +6,7 @@
             await this.$wire.load();
         },
         selectPixel(x, y) {
-            if (this.mode == 'paint') {
+            if (this.mode == 'paint' && this.selectedColor) {
                 this.$wire.paint(x, y);
             }
 
@@ -24,7 +24,9 @@
                     @for ($x = 0; $x < 8; $x++)
                         <button
                             wire:key="pixel-{{$x}}-{{ $y }}"
-                            x-on:click="selectPixel({{ $x }}, {{ $y }})"
+                            @if (session()->get('unlocked'))
+                                x-on:click="selectPixel({{ $x }}, {{ $y }})"
+                            @endif
                             style="background-color: {{ $this->coloredPixels[$y][$x] ?? 'transparent' }}"
                             class="flex flex-row w-[12.5%] aspect-square"
                         ></button>
@@ -70,28 +72,30 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="flex flex-col space-y-4">
-                    <button
-                        x-on:click="mode = 'paint'"
-                        x-bind:class="{
-                            'bg-gray-500 text-white': mode == 'paint',
-                            'bg-gray-100 text-black': mode != 'paint',
-                        }"
-                        class="px-4 py-2"
-                    >
-                        {{ __('Paint') }}
-                    </button>
-                    <button
-                        x-on:click="mode = 'erase'"
-                        x-bind:class="{
-                            'bg-gray-500 text-white': mode == 'erase',
-                            'bg-gray-100 text-black': mode != 'erase',
-                        }"
-                        class="px-4 py-2"
-                    >
-                        {{ __('Erase') }}
-                    </button>
-                </div>
+                @if (session()->get('unlocked'))
+                    <div class="flex flex-col space-y-4">
+                        <button
+                            x-on:click="mode = 'paint'"
+                            x-bind:class="{
+                                'bg-gray-500 text-white': mode == 'paint',
+                                'bg-gray-100 text-black': mode != 'paint',
+                            }"
+                            class="px-4 py-2"
+                        >
+                            {{ __('Paint') }}
+                        </button>
+                        <button
+                            x-on:click="mode = 'erase'"
+                            x-bind:class="{
+                                'bg-gray-500 text-white': mode == 'erase',
+                                'bg-gray-100 text-black': mode != 'erase',
+                            }"
+                            class="px-4 py-2"
+                        >
+                            {{ __('Erase') }}
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

@@ -74,6 +74,20 @@ class Editor extends Component
         $this->editing = Sound::findOrFail($id);
     }
 
+    public function setCode(string $code): void
+    {
+        $this->project->code = $code;
+        $this->project->save();
+
+        session()->put('unlocked', true);
+    }
+
+    public function unlock(string $code): void
+    {
+        session()->put('unlocked', $this->project->code == $code);
+        $this->redirectRoute('show-project', $this->project);
+    }
+
     public function render(): View
     {
         return view('livewire.editor');

@@ -64,6 +64,10 @@ class SpriteEditor extends Component
 
     public function paint(int $x, int $y): void
     {
+        if (!session()->get('unlocked')) {
+            return;
+        }
+
         $this->pixels[$this->address($x, $y)] = array_search($this->selectedColor, $this->colors);
 
         if (!isset($this->coloredPixels[$y])) {
@@ -83,6 +87,10 @@ class SpriteEditor extends Component
 
     public function erase(int $x, int $y, $save = true): void
     {
+        if (!session()->get('unlocked')) {
+            return;
+        }
+
         $this->pixels[$this->address($x, $y)] = -1;
 
         if (!isset($this->coloredPixels[$y])) {

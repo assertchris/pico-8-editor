@@ -1,42 +1,87 @@
 <div
     x-data="{
-    addSprite() {
-      var name = prompt('What should we call it?');
-      this.$wire.addSprite(name);
-    },
-    addSound() {
-      var name = prompt('What should we call it?');
-      this.$wire.addSound(name);
-    },
-    editSprite(id) {
-      this.$wire.editSprite(id);
-    },
-    deleteSprite(id) {
-        if (confirm('Are you sure?')) {
-            this.$wire.deleteSprite(id);
-        }
-    },
-    renameSprite(id, oldName) {
-        var newName = prompt('What should we call it?', oldName);
-        this.$wire.renameSprite(id, newName);
-    },
-    editSound(id) {
-      this.$wire.editSound(id);
-    },
-  }"
+        addSprite() {
+          var name = prompt('What should we call it?');
+          this.$wire.addSprite(name);
+        },
+        addSound() {
+          var name = prompt('What should we call it?');
+          this.$wire.addSound(name);
+        },
+        editSprite(id) {
+          this.$wire.editSprite(id);
+        },
+        deleteSprite(id) {
+            if (confirm('Are you sure?')) {
+                this.$wire.deleteSprite(id);
+            }
+        },
+        renameSprite(id, oldName) {
+            var newName = prompt('What should we call it?', oldName);
+            this.$wire.renameSprite(id, newName);
+        },
+        editSound(id) {
+          this.$wire.editSound(id);
+        },
+        setCode() {
+            var code = prompt('What should the code be? (do not forget it!)');
+            this.$wire.setCode(code);
+        },
+        unlock() {
+            var code = prompt('What is the code?');
+            this.$wire.unlock(code);
+        },
+    }"
     class="flex flex-row w-screen h-screen"
 >
     <div class="flex flex-col w-1/4 h-screen">
         <div class="p-4 space-y-4 border-gray-100">
             <div class="border border-gray-200 p-2 flex flex-col justify-start">
+                <div class="flex flex-col w-full">
+                    <h2 class="flex flex-grow">{{ __('Access') }}</h2>
+                    @if ($this->project->code)
+                        <div wire:key="has-code">
+                            {{ __('Must have code to edit') }}
+                            @if (session()->get('unlocked'))
+                                <div wire:key="unlocked">
+                                    {{ __('Unlocked') }}
+                                </div>
+                            @else
+                                <div wire:key="locked">
+                                    {{ __('Locked') }}
+                                    <button
+                                        x-on:click="unlock"
+                                        class="flex flex-shrink"
+                                    >
+                                        {{ __('Enter code') }}
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <div wire:key="missing-code">
+                            {{ __('Anyone can edit') }}
+                            <button
+                                x-on:click="setCode"
+                                class="flex flex-shrink"
+                            >
+                                {{ __('Set code') }}
+                            </button>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <div class="border border-gray-200 p-2 flex flex-col justify-start">
                 <div class="flex flex-row w-full">
                     <h2 class="flex flex-grow">{{ __('Sprites') }}</h2>
-                    <button
-                        x-on:click="addSprite"
-                        class="flex flex-shrink"
-                    >
-                        {{ __('Add') }}
-                    </button>
+                    @if (session()->get('unlocked'))
+                        <button
+                            x-on:click="addSprite"
+                            class="flex flex-shrink"
+                        >
+                            {{ __('Add') }}
+                        </button>
+                    @endif
                 </div>
                 @if ($this->project && $this->project->sprites->count())
                     <div class="flex flex-col w-full">
@@ -53,20 +98,26 @@
                                         x-on:click="editSprite('{{ $sprite->id }}')"
                                         class="flex"
                                     >
-                                        {{ __('Edit') }}
+                                        @if (session()->get('unlocked'))
+                                            {{ __('Edit') }}
+                                        @else
+                                            {{ __('View') }}
+                                        @endif
                                     </button>
-                                    <button
-                                        x-on:click="renameSprite('{{ $sprite->id }}', '{{ $sprite->name }}')"
-                                        class="flex"
-                                    >
-                                        {{ __('Rename') }}
-                                    </button>
-                                    <button
-                                        x-on:click="deleteSprite('{{ $sprite->id }}')"
-                                        class="flex"
-                                    >
-                                        {{ __('Delete') }}
-                                    </button>
+                                    @if (session()->get('unlocked'))
+                                        <button
+                                            x-on:click="renameSprite('{{ $sprite->id }}', '{{ $sprite->name }}')"
+                                            class="flex"
+                                        >
+                                            {{ __('Rename') }}
+                                        </button>
+                                        <button
+                                            x-on:click="deleteSprite('{{ $sprite->id }}')"
+                                            class="flex"
+                                        >
+                                            {{ __('Delete') }}
+                                        </button>
+                                    @endif
                                 </span>
                             </div>
                         @endforeach
