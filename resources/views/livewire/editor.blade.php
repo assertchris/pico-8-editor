@@ -36,41 +36,49 @@
 >
     <div class="flex flex-col w-1/4 h-screen">
         <div class="p-4 space-y-4 border-gray-100">
-            <div class="border border-gray-200 p-2 flex flex-col justify-start">
-                <div class="flex flex-col w-full">
-                    <h2 class="flex flex-grow">{{ __('Access') }}</h2>
-                    @if ($this->project->code)
-                        <div wire:key="has-code">
-                            {{ __('Must have code to edit') }}
-                            @if (session()->get('unlocked'))
-                                <div wire:key="unlocked">
-                                    {{ __('Unlocked') }}
-                                </div>
-                            @else
-                                <div wire:key="locked">
-                                    {{ __('Locked') }}
+            @if ($project)
+                <div class="border border-gray-200 p-2 flex flex-col justify-start">
+                    <div class="flex flex-col w-full">
+                        <h2 class="flex flex-grow">{{ __('Access') }}</h2>
+                        @if ($this->project->code)
+                            <div wire:key="has-code">
+                                {{ __('Must have code to edit') }}
+                                @if (session()->get('unlocked'))
+                                    <div wire:key="unlocked">
+                                        {{ __('Unlocked') }}
+                                    </div>
                                     <button
-                                        x-on:click="unlock"
+                                        x-on:click="setCode"
                                         class="flex flex-shrink"
                                     >
-                                        {{ __('Enter code') }}
+                                        {{ __('Change code') }}
                                     </button>
-                                </div>
-                            @endif
-                        </div>
-                    @else
-                        <div wire:key="missing-code">
-                            {{ __('Anyone can edit') }}
-                            <button
-                                x-on:click="setCode"
-                                class="flex flex-shrink"
-                            >
-                                {{ __('Set code') }}
-                            </button>
-                        </div>
-                    @endif
+                                @else
+                                    <div wire:key="locked">
+                                        {{ __('Locked') }}
+                                        <button
+                                            x-on:click="unlock"
+                                            class="flex flex-shrink"
+                                        >
+                                            {{ __('Enter code') }}
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <div wire:key="missing-code">
+                                {{ __('Anyone can edit') }}
+                                <button
+                                    x-on:click="setCode"
+                                    class="flex flex-shrink"
+                                >
+                                    {{ __('Set code') }}
+                                </button>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-            </div>
+            @endif
             <div class="border border-gray-200 p-2 flex flex-col justify-start">
                 <div class="flex flex-row w-full">
                     <h2 class="flex flex-grow">{{ __('Sprites') }}</h2>
