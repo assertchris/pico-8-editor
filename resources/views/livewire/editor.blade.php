@@ -2,11 +2,15 @@
     x-data="{
         addSprite() {
           var name = prompt('What should we call it?');
-          this.$wire.addSprite(name);
+          if (name) {
+            this.$wire.addSprite(name);
+          }
         },
         addSound() {
           var name = prompt('What should we call it?');
-          this.$wire.addSound(name);
+          if (name) {
+            this.$wire.addSound(name);
+          }
         },
         editSprite(id) {
           this.$wire.editSprite(id);
@@ -18,18 +22,24 @@
         },
         renameSprite(id, oldName) {
             var newName = prompt('What should we call it?', oldName);
-            this.$wire.renameSprite(id, newName);
+            if (newName) {
+                this.$wire.renameSprite(id, newName);
+            }
         },
         editSound(id) {
           this.$wire.editSound(id);
         },
         setCode() {
             var code = prompt('What should the code be? (do not forget it!)');
-            this.$wire.setCode(code);
+            if (code) {
+                this.$wire.setCode(code);
+            }
         },
         unlock() {
             var code = prompt('What is the code?');
-            this.$wire.unlock(code);
+            if (code) {
+                this.$wire.unlock(code);
+            }
         },
     }"
     class="flex flex-row w-screen h-screen"
@@ -82,7 +92,7 @@
             <div class="border border-gray-200 p-2 flex flex-col justify-start">
                 <div class="flex flex-row w-full">
                     <h2 class="flex flex-grow">{{ __('Sprites') }}</h2>
-                    @if (session()->get('unlocked'))
+                    @if (session()->get('unlocked') || !$this->project)
                         <button
                             x-on:click="addSprite"
                             class="flex flex-shrink"
