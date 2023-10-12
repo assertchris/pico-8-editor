@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Sprite;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
@@ -27,86 +28,35 @@ class SpriteEditor extends Component
         "#FFCCAA",
     ];
 
-    public array $pixels = [];
-
-    public array $coloredPixels = [];
-
-    public string|null $selectedColor;
-
     public Sprite $sprite;
 
-    public function load(): void
+    public array $pixels = [];
+
+    public int $size = 8;
+
+    public function mount(): void
     {
-        if ($this->sprite->pixels) {
-            $this->pixels = $this->sprite->pixels;
-
-            for ($y = 0; $y < 8; $y++) {
-                for ($x = 0; $x < 8; $x++) {
-                    $index = $this->pixels[$this->address($x, $y)];
-
-                    if ($index == -1) {
-                        $color = 'transparent';
-                    } else {
-                        $color = $this->colors[$index];
-                    }
-
-                    $this->coloredPixels[$y][$x] = $color;
-                }
+        for ($y = 0; $y < $this->size; $y++) {
+            for ($x = 0; $x < $this->size; $x++) {
+                $address = $this->address($x, $y);
+                $this->pixels[$address] = $this->sprite->pixels[$address] ?? -1;
             }
-        } else {
-            for ($y = 0; $y < 8; $y++) {
-                for ($x = 0; $x < 8; $x++) {
-                    $this->erase($x, $y, save: false);
-                }
-            }
-        }
-    }
-
-    public function paint(int $x, int $y): void
-    {
-        if (!session()->get('unlocked')) {
-            return;
-        }
-
-        $this->pixels[$this->address($x, $y)] = array_search($this->selectedColor, $this->colors);
-
-        if (!isset($this->coloredPixels[$y])) {
-            $this->coloredPixels[$y] = [];
-        }
-
-        $this->coloredPixels[$y][$x] = $this->selectedColor;
-
-        $this->save();
-    }
-
-    private function save(): void
-    {
-        $this->sprite->pixels = $this->pixels;
-        $this->sprite->save();
-    }
-
-    public function erase(int $x, int $y, $save = true): void
-    {
-        if (!session()->get('unlocked')) {
-            return;
-        }
-
-        $this->pixels[$this->address($x, $y)] = -1;
-
-        if (!isset($this->coloredPixels[$y])) {
-            $this->coloredPixels[$y] = [];
-        }
-
-        $this->coloredPixels[$y][$x] = 'transparent';
-
-        if ($save) {
-            $this->save();
         }
     }
 
     private function address(int $x, int $y): int
     {
-        return ($y * 8) + $x;
+        return ($y * $this->size) + $x;
+    }
+
+    public function updating(): void
+    {
+        if (!session()->get('unlocked')) {
+            throw new Exception;
+        }
+
+        $this->sprite->pixels = $this->pixels;
+        $this->sprite->save();
     }
 
     public function render(): View

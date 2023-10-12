@@ -1,11 +1,11 @@
 <div
     x-data="{
-        selectedColor: @entangle('selectedColor').live,
+        colors: @entangle('colors'),
+        selectedColor: 0,
+        pixels: @entangle('pixels').live,
+        size: @entangle('size').live,
         mode: 'paint',
         currentButton: null,
-        async init() {
-            await this.$wire.load();
-        },
         mousedown(event, x, y) {
             event.preventDefault();
 
@@ -29,19 +29,22 @@
         },
         selectPixel(x, y) {
             if (this.currentButton === 'left') {
-                this.$wire.paint(x, y);
+                this.pixels[this.address(x, y)] = this.selectedColor;
             }
 
             if (this.currentButton === 'right') {
-                this.$wire.erase(x, y);
+                this.pixels[this.address(x, y)] = -1;
             }
         },
+        address(x, y) {
+            return (y * this.size) + x;
+        }
     }"
     class="flex w-full"
 >
     <div class="flex w-full h-full p-4 pl-0 space-x-4 items-start">
         <div class="flex flex-col w-2/3 space-y-4">
-            <div class="flex flex-row flex-wrap w-full aspect-square pattern-checkered-gray-200/100 pattern-checkered-scale-[2.5]">
+            <div class="flex grid grid-cols-8 w-full aspect-square pattern-checkered-gray-200/100 pattern-checkered-scale-[2.5] divide-x divide-y divide-blue-200 border-r border-b border-blue-200">
                 @for ($y = 0; $y < 8; $y++)
                     @for ($x = 0; $x < 8; $x++)
                         <button
@@ -52,8 +55,13 @@
                                 x-on:mousedown="mousedown($event, {{ $x }}, {{ $y }})"
                                 x-on:mousemove="mouseover({{ $x }}, {{ $y }})"
                             @endif
-                            style="background-color: {{ $this->coloredPixels[$y][$x] ?? 'transparent' }}"
-                            class="flex flex-row w-[12.5%] aspect-square"
+                            x-bind:style="{ backgroundColor: pixels[address({{ $x }}, {{ $y }})] === -1 ? 'transparent' : colors[pixels[address({{ $x }}, {{ $y }})]] }"
+                            class="
+                                flex flex-grow aspect-square
+                                @if ($x === 0 && $y === 0)
+                                    border-t border-l border-blue-200
+                                @endif
+                            "
                         ></button>
                     @endfor
                 @endfor
@@ -85,10 +93,10 @@
                     <div class="flex flex-row flex-wrap w-full aspect-square">
                         @foreach ($this->colors as $i => $color)
                             <button
-                                x-on:click="selectedColor = '{{ $color }}'"
+                                x-on:click="selectedColor = {{ $i }}"
                                 x-bind:class="{
-                                    'border-8 border-white': selectedColor == '{{ $color }}',
-                                    'border-8 border-transparent': selectedColor != '{{ $color }}'
+                                    'border-8 border-white': selectedColor == {{ $i }},
+                                    'border-8 border-transparent': selectedColor != {{ $i }},
                                 }"
                                 class="flex w-[25%] aspect-square text-white items-center justify-center" style="background-color: {{ $color }}"
                             >
