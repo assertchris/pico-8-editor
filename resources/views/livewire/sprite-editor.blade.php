@@ -2,15 +2,37 @@
     x-data="{
         selectedColor: @entangle('selectedColor').live,
         mode: 'paint',
+        currentButton: null,
         async init() {
             await this.$wire.load();
         },
+        mousedown(event, x, y) {
+            event.preventDefault();
+
+            if (event.button === 0) {
+                this.currentButton = 'left';
+            }
+
+            if (event.button === 2) {
+                this.currentButton = 'right';
+            }
+
+            this.selectPixel(x, y);
+        },
+        mouseup(event) {
+            this.currentButton = null;
+        },
+        mouseover(x, y) {
+            if (this.currentButton) {
+                this.selectPixel(x, y);
+            }
+        },
         selectPixel(x, y) {
-            if (this.mode == 'paint' && this.selectedColor) {
+            if (this.currentButton === 'left') {
                 this.$wire.paint(x, y);
             }
 
-            if (this.mode == 'erase') {
+            if (this.currentButton === 'right') {
                 this.$wire.erase(x, y);
             }
         },
@@ -25,7 +47,10 @@
                         <button
                             wire:key="pixel-{{$x}}-{{ $y }}"
                             @if (session()->get('unlocked'))
-                                x-on:click="selectPixel({{ $x }}, {{ $y }})"
+                                x-on:contextmenu="$event.preventDefault()"
+                                x-on:mouseup="mouseup($event)"
+                                x-on:mousedown="mousedown($event, {{ $x }}, {{ $y }})"
+                                x-on:mousemove="mouseover({{ $x }}, {{ $y }})"
                             @endif
                             style="background-color: {{ $this->coloredPixels[$y][$x] ?? 'transparent' }}"
                             class="flex flex-row w-[12.5%] aspect-square"
@@ -72,30 +97,6 @@
                         @endforeach
                     </div>
                 </div>
-                @if (session()->get('unlocked'))
-                    <div class="flex flex-col space-y-4">
-                        <button
-                            x-on:click="mode = 'paint'"
-                            x-bind:class="{
-                                'bg-gray-500 text-white': mode == 'paint',
-                                'bg-gray-100 text-black': mode != 'paint',
-                            }"
-                            class="px-4 py-2"
-                        >
-                            {{ __('Paint') }}
-                        </button>
-                        <button
-                            x-on:click="mode = 'erase'"
-                            x-bind:class="{
-                                'bg-gray-500 text-white': mode == 'erase',
-                                'bg-gray-100 text-black': mode != 'erase',
-                            }"
-                            class="px-4 py-2"
-                        >
-                            {{ __('Erase') }}
-                        </button>
-                    </div>
-                @endif
             </div>
         </div>
     </div>
