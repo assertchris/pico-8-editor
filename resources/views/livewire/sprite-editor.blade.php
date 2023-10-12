@@ -2,7 +2,7 @@
     x-data="{
         colors: @entangle('colors'),
         selectedColor: 0,
-        pixels: @entangle('pixels').live,
+        pixels: @entangle('pixels'),
         size: @entangle('size').live,
         mode: 'paint',
         currentButton: null,
@@ -21,6 +21,7 @@
         },
         mouseup(event) {
             this.currentButton = null;
+            this.$wire.save();
         },
         mouseover(x, y) {
             if (this.currentButton) {

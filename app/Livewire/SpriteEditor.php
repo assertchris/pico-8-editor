@@ -49,10 +49,10 @@ class SpriteEditor extends Component
         return ($y * $this->size) + $x;
     }
 
-    public function updating(): void
+    public function save(): void
     {
         if (!session()->get('unlocked')) {
-            throw new Exception;
+            return;
         }
 
         $this->sprite->pixels = $this->pixels;
