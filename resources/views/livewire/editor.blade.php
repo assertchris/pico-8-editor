@@ -41,13 +41,13 @@ new class extends Component {
     public function deleteSprite(string $id): void
     {
         Sprite::findOrFail($id)->delete();
-        $this->redirectRoute('projects.show-project', $this->project);
+        $this->redirect($this->project->url);
     }
 
     public function deleteSound(string $id): void
     {
         Sound::findOrFail($id)->delete();
-        $this->redirectRoute('projects.show-project', $this->project);
+        $this->redirect($this->project->url);
     }
 
     public function renameSprite(string $id, string $name): void
