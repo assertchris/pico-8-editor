@@ -80,7 +80,9 @@ new class extends Component {
         $validator = validator()->make([
             'newSlug' => $newSlug,
         ], [
-            'newSlug' => Rule::unique('sprites', 'slug')->ignore($this->sprite),
+            'newSlug' => Rule::unique('sprites', 'slug')
+                ->ignore($this->sprite)
+                ->where('project_id', $this->sprite->project->id),
         ]);
 
         $this->errors['slug'] = null;
