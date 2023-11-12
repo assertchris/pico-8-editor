@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sprites', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->ulid('id');
             $table->string('name');
             $table->json('pixels')->nullable();
             $table->foreignUlid('project_id')->nullable()->index();

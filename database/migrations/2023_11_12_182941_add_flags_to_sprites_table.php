@@ -8,16 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
-            $table->ulid('id');
-            $table->string('name');
-            $table->foreignUlid('user_id')->nullable()->index();
-            $table->timestamps();
+        Schema::table('sprites', function (Blueprint $table) {
+            $table->json('flags');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('projects');
+        Schema::table('sprites', function (Blueprint $table) {
+            $table->dropColumn('flags');
+        });
     }
 };

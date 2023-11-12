@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sounds', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->ulid('id');
             $table->string('name');
             $table->integer('length')->nullable();
             $table->json('notes')->nullable();

@@ -1,3 +1,98 @@
+<?php
+
+use App\Models\Project;
+use App\Models\Sound;
+use App\Models\Sprite;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Livewire\Volt\Component;
+
+new class extends Component {
+    public Project|null $project = null;
+
+    public Sprite|Sound|null $editing = null;
+
+    public array $errors = [];
+
+    public function addSprite(string $name): void
+    {
+        $this->project->sprites()->create([
+            'name' => $name,
+        ]);
+    }
+
+    public function addSound(string $name): void
+    {
+        $this->project->sounds()->create([
+            'name' => $name,
+        ]);
+    }
+
+    public function editSprite(string $id): void
+    {
+        $this->editing = Sprite::findOrFail($id);
+    }
+
+    public function editSound(string $id): void
+    {
+        $this->editing = Sound::findOrFail($id);
+    }
+
+    public function deleteSprite(string $id): void
+    {
+        Sprite::findOrFail($id)->delete();
+        $this->redirectRoute('projects.show-project', $this->project);
+    }
+
+    public function deleteSound(string $id): void
+    {
+        Sound::findOrFail($id)->delete();
+        $this->redirectRoute('projects.show-project', $this->project);
+    }
+
+    public function renameSprite(string $id, string $name): void
+    {
+        $sprite = Sprite::findOrFail($id);
+        $sprite->name = $name;
+        $sprite->save();
+    }
+
+    public function renameSound(string $id, string $name): void
+    {
+        $sound = Sound::findOrFail($id);
+        $sound->name = $name;
+        $sound->save();
+    }
+
+    public function changeName(string $newName): void
+    {
+        $this->project->name = $newName;
+        $this->project->save();
+    }
+
+    public function changeSlug(string $newSlug): void
+    {
+        $validator = validator()->make([
+            'newSlug' => $newSlug,
+        ], [
+            'newSlug' => Rule::unique('projects', 'slug')->ignore($this->project),
+        ]);
+
+        $this->errors['slug'] = null;
+
+        if (!$validator->fails()) {
+            $this->project->slug = $newSlug;
+            $this->project->save();
+
+            $this->redirect($this->project->url);
+        } else {
+            $this->errors['slug'] = __('This slug is already taken');
+        }
+    }
+};
+
+?>
+
 <div
     x-data="{
         addSprite() {
@@ -15,9 +110,17 @@
         editSprite(id) {
           this.$wire.editSprite(id);
         },
+        editSound(id) {
+          this.$wire.editSound(id);
+        },
         deleteSprite(id) {
             if (confirm('Are you sure?')) {
                 this.$wire.deleteSprite(id);
+            }
+        },
+        deleteSound(id) {
+            if (confirm('Are you sure?')) {
+                this.$wire.deleteSound(id);
             }
         },
         renameSprite(id, oldName) {
@@ -26,19 +129,10 @@
                 this.$wire.renameSprite(id, newName);
             }
         },
-        editSound(id) {
-          this.$wire.editSound(id);
-        },
-        setCode() {
-            var code = prompt('What should the code be? (do not forget it!)');
-            if (code) {
-                this.$wire.setCode(code);
-            }
-        },
-        unlock() {
-            var code = prompt('What is the code?');
-            if (code) {
-                this.$wire.unlock(code);
+        renameSound(id, oldName) {
+            var newName = prompt('What should we call it?', oldName);
+            if (newName) {
+                this.$wire.renameSound(id, newName);
             }
         },
     }"
@@ -46,45 +140,33 @@
 >
     <div class="flex flex-col w-1/4 h-screen">
         <div class="p-4 space-y-4 border-gray-100">
-            @if ($project)
-                <div class="border border-gray-200 p-2 flex flex-col justify-start">
-                    <div class="flex flex-col w-full">
-                        <h2 class="flex flex-grow">{{ __('Access') }}</h2>
-                        @if ($this->project->code)
-                            <div wire:key="has-code">
-                                {{ __('Must have code to edit') }}
-                                @if (session()->get('unlocked'))
-                                    <div wire:key="unlocked">
-                                        {{ __('Unlocked') }}
-                                    </div>
-                                    <button
-                                        x-on:click="setCode"
-                                        class="flex flex-shrink"
-                                    >
-                                        {{ __('Change code') }}
-                                    </button>
-                                @else
-                                    <div wire:key="locked">
-                                        {{ __('Locked') }}
-                                        <button
-                                            x-on:click="unlock"
-                                            class="flex flex-shrink"
-                                        >
-                                            {{ __('Enter code') }}
-                                        </button>
-                                    </div>
-                                @endif
-                            </div>
-                        @else
-                            <div wire:key="missing-code">
-                                {{ __('Anyone can edit') }}
-                                <button
-                                    x-on:click="setCode"
-                                    class="flex flex-shrink"
-                                >
-                                    {{ __('Set code') }}
-                                </button>
-                            </div>
+            @if (user() && user()->is($this->project->user) || !$this->project)
+                <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
+                    <div class="flex flex-col">
+                        {{ __('Name') }}:
+                        <input
+                            type="text"
+                            value="{{ $this->project->name }}"
+                            wire:change="changeName($event.target.value)"
+                        />
+                    </div>
+                </div>
+            @else
+                <h1>
+                    {{ $this->project->name }}
+                </h1>
+            @endif
+            @if (user() && user()->is($this->project->user) || !$this->project)
+                <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
+                    <div class="flex flex-col">
+                        {{ __('Slug') }}:
+                        <input
+                            type="text"
+                            value="{{ $this->project->slug }}"
+                            wire:change="changeSlug($event.target.value)"
+                        />
+                        @if(!empty($this->errors['slug']))
+                            <div class="text-red">{{ $this->errors['slug'] }}</div>
                         @endif
                     </div>
                 </div>
@@ -92,7 +174,7 @@
             <div class="border border-gray-200 p-2 flex flex-col justify-start">
                 <div class="flex flex-row w-full">
                     <h2 class="flex flex-grow">{{ __('Sprites') }}</h2>
-                    @if (session()->get('unlocked') || !$this->project)
+                    @if (user() && user()->is($this->project->user) || !$this->project)
                         <button
                             x-on:click="addSprite"
                             class="flex flex-shrink"
@@ -116,13 +198,13 @@
                                         x-on:click="editSprite('{{ $sprite->id }}')"
                                         class="flex"
                                     >
-                                        @if (session()->get('unlocked'))
+                                        @if (user() && user()->is($this->project->user))
                                             {{ __('Edit') }}
                                         @else
                                             {{ __('View') }}
                                         @endif
                                     </button>
-                                    @if (session()->get('unlocked'))
+                                    @if (user())
                                         <button
                                             x-on:click="renameSprite('{{ $sprite->id }}', '{{ $sprite->name }}')"
                                             class="flex"
@@ -143,33 +225,60 @@
                 @else
                     {{ __('No sprites') }}
                 @endif
+                <div class="flex flex-row w-full">
+                    <h2 class="flex flex-grow">{{ __('Sounds') }}</h2>
+                    @if (user() && user()->is($this->project->user) || !$this->project)
+                        <button
+                            x-on:click="addSound"
+                            class="flex flex-shrink"
+                        >
+                            {{ __('Add') }}
+                        </button>
+                    @endif
+                </div>
+                @if ($this->project && $this->project->sounds->count())
+                    <div class="flex flex-col w-full">
+                        @foreach ($this->project->sounds as $sound)
+                            <div
+                                wire:key="sound-{{ $sound->id }}"
+                                class="flex flex-row w-full"
+                            >
+                                <span class="flex flex-grow">
+                                    {{ $sound->name }}
+                                </span>
+                                <span class="flex flex-row flex-shrink space-x-2">
+                                    <button
+                                        x-on:click="editSound('{{ $sound->id }}')"
+                                        class="flex"
+                                    >
+                                        @if (user()->is($this->project->user))
+                                            {{ __('Edit') }}
+                                        @else
+                                            {{ __('View') }}
+                                        @endif
+                                    </button>
+                                    @if (user())
+                                        <button
+                                            x-on:click="renameSound('{{ $sound->id }}', '{{ $sound->name }}')"
+                                            class="flex"
+                                        >
+                                            {{ __('Rename') }}
+                                        </button>
+                                        <button
+                                            x-on:click="deleteSound('{{ $sound->id }}')"
+                                            class="flex"
+                                        >
+                                            {{ __('Delete') }}
+                                        </button>
+                                    @endif
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    {{ __('No sounds') }}
+                @endif
             </div>
-{{--            <div class="border border-gray-200 p-2 flex flex-col justify-start">--}}
-{{--                <h2 class="flex">{{ __('Sounds') }}</h2>--}}
-{{--                <button--}}
-{{--                    x-on:click="addSound"--}}
-{{--                    class="flex"--}}
-{{--                >--}}
-{{--                    {{ __('Add sound') }}--}}
-{{--                </button>--}}
-{{--                @if ($this->project && $this->project->sounds->count())--}}
-{{--                    <div class="flex flex-col w-full">--}}
-{{--                        @foreach ($this->project->sounds as $sound)--}}
-{{--                            <div wire:key="sound-{{ $sound->id }}">--}}
-{{--                                {{ $sound->name }}--}}
-{{--                                <button--}}
-{{--                                    x-on:click="editSound('{{ $sound->id }}')"--}}
-{{--                                    class="flex"--}}
-{{--                                >--}}
-{{--                                    {{ __('Edit sound') }}--}}
-{{--                                </button>--}}
-{{--                            </div>--}}
-{{--                        @endforeach--}}
-{{--                    </div>--}}
-{{--                @else--}}
-{{--                    {{ __('No sounds') }}--}}
-{{--                @endif--}}
-{{--            </div>--}}
         </div>
     </div>
     <div class="flex flex-col w-3/4 h-screen">
@@ -177,12 +286,6 @@
             <livewire:sprite-editor
                 wire:key="sprite-editor-{{ $this->editing->id }}"
                 :sprite="$this->editing"
-            />
-        @endif
-        @if ($this->editing instanceof \App\Models\Sound)
-            <livewire:sound-editor
-                wire:key="sound-editor-{{ $this->editing->id }}"
-                :sound="$this->editing"
             />
         @endif
     </div>

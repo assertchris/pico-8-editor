@@ -1,11 +1,110 @@
+<?php
+
+use App\Models\Sprite;
+use Illuminate\Validation\Rule;
+use Livewire\Volt\Component;
+
+new class extends Component {
+    public array $colors = [
+        "#000000",
+        "#1D2B53",
+        "#7E2553",
+        "#008751",
+        "#AB5236",
+        "#5F574F",
+        "#C2C3C7",
+        "#FFF1E8",
+        "#FF004D",
+        "#FFA300",
+        "#FFEC27",
+        "#00E436",
+        "#29ADFF",
+        "#83769C",
+        "#FF77A8",
+        "#FFCCAA",
+    ];
+
+    public Sprite $sprite;
+
+    public array $pixels = [];
+
+    public array $errors = [];
+
+    public int $size = 8;
+
+    public array $flags = [
+        0 => false,
+        1 => false,
+        2 => false,
+        3 => false,
+        4 => false,
+        5 => false,
+        6 => false,
+        7 => false,
+    ];
+
+    public function mount(): void
+    {
+        for ($y = 0; $y < $this->size; $y++) {
+            for ($x = 0; $x < $this->size; $x++) {
+                $address = $this->address($x, $y);
+                $this->pixels[$address] = $this->sprite->pixels[$address] ?? -1;
+            }
+        }
+
+        $this->flags = $this->sprite->flags;
+    }
+
+    private function address(int $x, int $y): int
+    {
+        return ($y * $this->size) + $x;
+    }
+
+    public function save(): void
+    {
+        $this->sprite->pixels = $this->pixels;
+        $this->sprite->save();
+    }
+
+    public function changeSlug(string $newSlug): void
+    {
+        $validator = validator()->make([
+            'newSlug' => $newSlug,
+        ], [
+            'newSlug' => Rule::unique('sprites', 'slug')->ignore($this->sprite),
+        ]);
+
+        $this->errors['slug'] = null;
+
+        if (!$validator->fails()) {
+            $this->sprite->slug = $newSlug;
+            $this->sprite->save();
+        } else {
+            $this->errors['slug'] = __('This slug is already taken');
+        }
+    }
+
+    public function changeFlag(int $value): void
+    {
+        $this->flags[$value] = !$this->flags[$value];
+
+        $this->sprite->flags = $this->flags;
+        $this->sprite->save();
+    }
+};
+
+?>
+
 <div
     x-data="{
         colors: @entangle('colors'),
         selectedColor: 0,
         pixels: @entangle('pixels'),
         size: @entangle('size').live,
+        flags: @entangle('flags').live,
         mode: 'paint',
         currentButton: null,
+        @if (user() && user()->is($this->sprite->project->user))
         mousedown(event, x, y) {
             event.preventDefault();
 
@@ -37,6 +136,7 @@
                 this.pixels[this.address(x, y)] = -1;
             }
         },
+        @endif
         address(x, y) {
             return (y * this.size) + x;
         }
@@ -50,11 +150,11 @@
                     @for ($x = 0; $x < 8; $x++)
                         <button
                             wire:key="pixel-{{$x}}-{{ $y }}"
-                            @if (session()->get('unlocked'))
+                            @if (user() && user()->is($this->sprite->project->user))
                                 x-on:contextmenu="$event.preventDefault()"
-                                x-on:mouseup="mouseup($event)"
-                                x-on:mousedown="mousedown($event, {{ $x }}, {{ $y }})"
-                                x-on:mousemove="mouseover({{ $x }}, {{ $y }})"
+                            x-on:mouseup="mouseup($event)"
+                            x-on:mousedown="mousedown($event, {{ $x }}, {{ $y }})"
+                            x-on:mousemove="mouseover({{ $x }}, {{ $y }})"
                             @endif
                             x-bind:style="{ backgroundColor: pixels[address({{ $x }}, {{ $y }})] === -1 ? 'transparent' : colors[pixels[address({{ $x }}, {{ $y }})]] }"
                             class="
@@ -71,42 +171,74 @@
                 <h2>{{ __('Preload in dev') }}</h2>
                 <pre class="text-xs overflow-x-scroll bg-gray-100 p-2">var sprites = [
     // ...
-    '{{ $this->sprite->name }}': preload('{{ $this->sprite->url }}'),
+    '{{ $this->sprite->slug ?? $this->sprite->name }}': preload('{{ $this->sprite->url }}'),
 ]</pre>
             </div>
             @if ($this->pixels)
-            <div>
+                <div>
                     <h2>{{ __('Load in prod') }}</h2>
                     <pre class="text-xs overflow-x-scroll bg-gray-100 p-2">var sprites = [
     // ...
-    '{{ $this->sprite->name }}': {{ json_encode($this->pixels) }},
+    '{{ $this->sprite->slug ?? $this->sprite->name }}': {{ json_encode($this->pixels) }},
 ]</pre>
                 </div>
             @endif
             <div>
                 <h2>{{ __('Use') }}</h2>
-                <pre class="text-xs whitespace-pre-line bg-gray-100 p-2">spr('{{ $this->sprite->name }}', 15, 20)</pre>
+                <pre class="text-xs whitespace-pre-line bg-gray-100 p-2">spr('{{ $this->sprite->slug ?? $this->sprite->name }}', 15, 20)</pre>
             </div>
         </div>
-        <div class="flex flex-col w-1/3">
-            <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
-                <div class="flex flex-col">
-                    <div class="flex flex-row flex-wrap w-full aspect-square">
-                        @foreach ($this->colors as $i => $color)
-                            <button
-                                x-on:click="selectedColor = {{ $i }}"
-                                x-bind:class="{
-                                    'border-8 border-white': selectedColor == {{ $i }},
-                                    'border-8 border-transparent': selectedColor != {{ $i }},
-                                }"
-                                class="flex w-[25%] aspect-square text-white items-center justify-center" style="background-color: {{ $color }}"
-                            >
-                                <span class="bg-black bg-opacity-50 rounded px-2 py-1 pointer-events-none">{{ $i }}</span>
-                            </button>
-                        @endforeach
+        @if (user() && user()->is($this->sprite->project->user))
+            <div class="flex flex-col w-1/3 space-y-4">
+                <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
+                    <div class="flex flex-col">
+                        {{ __('Slug') }}:
+                        <input
+                            type="text"
+                            value="{{ $this->sprite->slug }}"
+                            wire:keyup="changeSlug($event.target.value)"
+                        />
+                        @if(!empty($this->errors['slug']))
+                            <div class="text-red">{{ $this->errors['slug'] }}</div>
+                        @endif
+                    </div>
+                </div>
+                <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
+                    <div class="flex flex-col">
+                        <div class="flex flex-row flex-wrap w-full aspect-square">
+                            @foreach ($this->colors as $i => $color)
+                                <button
+                                    x-on:click="selectedColor = {{ $i }}"
+                                    x-bind:class="{
+                                        'border-8 border-white': selectedColor == {{ $i }},
+                                        'border-8 border-transparent': selectedColor != {{ $i }},
+                                    }"
+                                    class="flex w-[25%] aspect-square text-white items-center justify-center" style="background-color: {{ $color }}"
+                                >
+                                    <span class="bg-black bg-opacity-50 rounded px-2 py-1 pointer-events-none">{{ $i }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
+                    <div class="flex flex-row items-center space-x-2">
+                        <span>{{ __('Flags') }}:</span>
+                        @for ($i = 0; $i < 8; $i++)
+                            <input
+                                type="checkbox"
+                                value="{{ $i }}"
+                                wire:change="changeFlag($event.target.value)"
+                                @if ($this->flags[$i])
+                                    checked
+                                @endif
+                                class="flex"
+                            />
+                        @endfor
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>
+

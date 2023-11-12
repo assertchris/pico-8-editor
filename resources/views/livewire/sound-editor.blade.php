@@ -1,3 +1,0 @@
-<div>
-    sound editor
-</div>
