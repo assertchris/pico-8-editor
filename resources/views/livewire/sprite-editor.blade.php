@@ -52,7 +52,16 @@ new class extends Component {
             }
         }
 
-        $this->flags = $this->sprite->flags;
+        $this->flags = $this->sprite->flags ?? [
+            0 => false,
+            1 => false,
+            2 => false,
+            3 => false,
+            4 => false,
+            5 => false,
+            6 => false,
+            7 => false,
+        ];
     }
 
     private function address(int $x, int $y): int
