@@ -21,19 +21,21 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         Route::bind('asset', function (string $value) {
-            if ($asset = Sprite::where('slug', '=', $value)->first()) {
+            $project_id = request()->project_id;
+
+            if ($asset = Sprite::where('slug', '=', $value)->where('project_id', '=', $project_id)->first()) {
                 return $asset;
             }
 
-            if ($asset = Sound::where('slug', '=', $value)->first()) {
+            if ($asset = Sound::where('slug', '=', $value)->where('project_id', '=', $project_id)->first()) {
                 return $asset;
             }
 
-            if ($asset = Sprite::where('id', '=', $value)->first()) {
+            if ($asset = Sprite::where('id', '=', $value)->where('project_id', '=', $project_id)->first()) {
                 return $asset;
             }
 
-            if ($asset = Sound::where('id', '=', $value)->first()) {
+            if ($asset = Sound::where('id', '=', $value)->where('project_id', '=', $project_id)->first()) {
                 return $asset;
             }
 
@@ -43,11 +45,15 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         Route::bind('project', function (string $value) {
-            if ($project = Project::where('slug', '=', $value)->first()) {
+            $user_id = request()->user_id;
+
+            if ($project = Project::where('slug', '=', $value)->where('user_id', '=', $user_id)->first()) {
+                request()->project_id = $project->id;
                 return $project;
             }
 
-            if ($project = Project::where('id', '=', $value)->first()) {
+            if ($project = Project::where('id', '=', $value)->where('user_id', '=', $user_id)->first()) {
+                request()->project_id = $project->id;
                 return $project;
             }
 
@@ -57,12 +63,14 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         Route::bind('user', function (string $value) {
-            if ($project = User::where('slug', '=', $value)->first()) {
-                return $project;
+            if ($user = User::where('slug', '=', $value)->first()) {
+                request()->user_id = $user->id;
+                return $user;
             }
 
-            if ($project = User::where('id', '=', $value)->first()) {
-                return $project;
+            if ($user = User::where('id', '=', $value)->first()) {
+                request()->user_id = $user->id;
+                return $user;
             }
 
             logger('user not found with ' . $value);
