@@ -37,6 +37,8 @@ class RouteServiceProvider extends ServiceProvider
                 return $asset;
             }
 
+            logger('asset not found with ' . $value);
+
             abort(404);
         });
 
@@ -49,6 +51,8 @@ class RouteServiceProvider extends ServiceProvider
                 return $project;
             }
 
+            logger('project not found with ' . $value);
+
             abort(404);
         });
 
@@ -60,6 +64,8 @@ class RouteServiceProvider extends ServiceProvider
             if ($project = User::where('id', '=', $value)->first()) {
                 return $project;
             }
+
+            logger('user not found with ' . $value);
 
             abort(404);
         });
