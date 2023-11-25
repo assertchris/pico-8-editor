@@ -39,7 +39,7 @@ class RouteServiceProvider extends ServiceProvider
                 return $asset;
             }
 
-            logger('asset not found with ' . $value);
+            logger('asset not found with '.$value);
 
             abort(404);
         });
@@ -49,15 +49,17 @@ class RouteServiceProvider extends ServiceProvider
 
             if ($project = Project::where('slug', '=', $value)->where('user_id', '=', $user_id)->first()) {
                 request()->project_id = $project->id;
+
                 return $project;
             }
 
             if ($project = Project::where('id', '=', $value)->where('user_id', '=', $user_id)->first()) {
                 request()->project_id = $project->id;
+
                 return $project;
             }
 
-            logger('project not found with ' . $value);
+            logger('project not found with '.$value);
 
             abort(404);
         });
@@ -65,15 +67,17 @@ class RouteServiceProvider extends ServiceProvider
         Route::bind('user', function (string $value) {
             if ($user = User::where('slug', '=', $value)->first()) {
                 request()->user_id = $user->id;
+
                 return $user;
             }
 
             if ($user = User::where('id', '=', $value)->first()) {
                 request()->user_id = $user->id;
+
                 return $user;
             }
 
-            logger('user not found with ' . $value);
+            logger('user not found with '.$value);
 
             abort(404);
         });

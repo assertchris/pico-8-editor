@@ -24,6 +24,16 @@ class Kernel extends HttpKernel
     ];
 
     /**
+     * @return array|string[]
+     */
+    public function getMiddleware(): array
+    {
+        return array_merge($this->middleware, [
+            env('TORCHLIGHT_ENABLED') ? \Torchlight\Middleware\RenderTorchlight::class : null,
+        ]);
+    }
+
+    /**
      * The application's route middleware groups.
      *
      * @var array<string, array<int, class-string|string>>

@@ -180,23 +180,20 @@ new class extends Component {
             </div>
             <div>
                 <h2>{{ __('Preload in dev') }}</h2>
-                <pre class="text-xs overflow-x-scroll bg-gray-100 p-2">var sprites = [
-    // ...
-    '{{ $this->sprite->slug ?? $this->sprite->name }}': preload('{{ $this->sprite->url }}'),
-]</pre>
+                <x-code-block language="js">var sprites = [
+                    // ...
+                    '{{ $this->sprite->slug ?? $this->sprite->name }}': preload('{{ $this->sprite->url }}'),
+                ]</x-code-block>
             </div>
             @if ($this->pixels)
                 <div>
                     <h2>{{ __('Load in prod') }}</h2>
-                    <pre class="text-xs overflow-x-scroll bg-gray-100 p-2">var sprites = [
-    // ...
-    '{{ $this->sprite->slug ?? $this->sprite->name }}': {{ json_encode($this->pixels) }},
-]</pre>
+                    <x-code-block language="js">{{ $this->sprite->pretty }}</x-code-block>
                 </div>
             @endif
             <div>
                 <h2>{{ __('Use') }}</h2>
-                <pre class="text-xs whitespace-pre-line bg-gray-100 p-2">spr('{{ $this->sprite->slug ?? $this->sprite->name }}', 15, 20)</pre>
+                <x-code-block language="js">spr('{{ $this->sprite->slug ?? $this->sprite->name }}', 15, 20)</x-code-block>
             </div>
         </div>
         @if (user() && user()->is($this->sprite->project->user))
