@@ -31,5 +31,4 @@ Route::get('/{user}/{project}/{asset}.{type}.json', ShowAssetDataResponder::clas
 
 Route::get('/{user}/{project}', ShowProjectResponder::class)
     ->name('projects.show-project')
-    ->where('project', '\b(?!dashboard\b)[0-9a-zA-Z-]+\b')
-    ->middleware('auth');
+    ->where('project', '\b(?!dashboard\b)[0-9a-zA-Z-]+\b');

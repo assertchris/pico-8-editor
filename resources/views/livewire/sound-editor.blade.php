@@ -80,6 +80,7 @@ new class extends Component
         instrument: @entangle('instrument').live,
         currentButton: null,
         resetTimer: null,
+        @if (user() && user()->is($this->sound->project->user))
         frequencyClear(event, i) {
             event.preventDefault();
             this.notes[i][0] = 0;
@@ -133,6 +134,7 @@ new class extends Component
             this.currentButton = null;
             this.$wire.save();
         },
+        @endif
         play() {
             var instance = new window.Engine();
 
@@ -170,10 +172,12 @@ new class extends Component
             <div class="flex flex-row min-h-[400px] w-full">
                 @for ($i = 0; $i < 32; $i++)
                     <div
-                        x-on:contextmenu="frequencyClear($event, {{ $i }})"
-                        x-on:mousedown="frequencyMousedown($event, {{ $i }})"
-                        x-on:mousemove="frequencyMousemove($event, {{ $i }})"
-                        x-on:mouseup="stop"
+                        @if (user() && user()->is($this->sound->project->user))
+                            x-on:contextmenu="frequencyClear($event, {{ $i }})"
+                            x-on:mousedown="frequencyMousedown($event, {{ $i }})"
+                            x-on:mousemove="frequencyMousemove($event, {{ $i }})"
+                            x-on:mouseup="stop"
+                        @endif
                         class="flex h-full bg-gray-100 w-[3.125%] relative"
                     >
                         <div
@@ -185,8 +189,8 @@ new class extends Component
                                 x-bind:class="{
                                     'bg-red-300': notes[{{ $i }}][2] == 0,
                                     'bg-green-300': notes[{{ $i }}][2] == 1,
-                                    'bg-blue-300': notes[{{ $i }}][2] == 2,
-                                    'bg-purple-300': notes[{{ $i }}][2] == 3,
+                                    'bg-purple-300': notes[{{ $i }}][2] == 2,
+                                    'bg-blue-300': notes[{{ $i }}][2] == 3,
                                 }"
                             >
                                 &nbsp;
@@ -198,10 +202,12 @@ new class extends Component
             <div class="flex flex-row min-h-[100px] w-full">
                 @for ($i = 0; $i < 32; $i++)
                     <div
-                        x-on:contextmenu="volumeClear($event, {{ $i }})"
-                        x-on:mousedown="volumeMousedown($event, {{ $i }})"
-                        x-on:mousemove="volumeMousemove($event, {{ $i }})"
-                        x-on:mouseup="stop"
+                        @if (user() && user()->is($this->sound->project->user))
+                            x-on:contextmenu="volumeClear($event, {{ $i }})"
+                            x-on:mousedown="volumeMousedown($event, {{ $i }})"
+                            x-on:mousemove="volumeMousemove($event, {{ $i }})"
+                            x-on:mouseup="stop"
+                        @endif
                         class="flex h-full bg-gray-100 w-[3.125%] relative"
                     >
                         <div

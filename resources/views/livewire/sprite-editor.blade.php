@@ -152,9 +152,9 @@ new class extends Component {
                             wire:key="pixel-{{$x}}-{{ $y }}"
                             @if (user() && user()->is($this->sprite->project->user))
                                 x-on:contextmenu="$event.preventDefault()"
-                            x-on:mouseup="mouseup($event)"
-                            x-on:mousedown="mousedown($event, {{ $x }}, {{ $y }})"
-                            x-on:mousemove="mouseover({{ $x }}, {{ $y }})"
+                                x-on:mouseup="mouseup($event)"
+                                x-on:mousedown="mousedown($event, {{ $x }}, {{ $y }})"
+                                x-on:mousemove="mouseover({{ $x }}, {{ $y }})"
                             @endif
                             x-bind:style="{ backgroundColor: pixels[address({{ $x }}, {{ $y }})] === -1 ? 'transparent' : colors[pixels[address({{ $x }}, {{ $y }})]] }"
                             class="

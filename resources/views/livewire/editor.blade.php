@@ -255,7 +255,7 @@ new class extends Component {
                                         x-on:click="editSound('{{ $sound->id }}')"
                                         class="flex"
                                     >
-                                        @if (user()->is($this->project->user))
+                                        @if (user() && user()->is($this->project->user))
                                             {{ __('Edit') }}
                                         @else
                                             {{ __('View') }}
