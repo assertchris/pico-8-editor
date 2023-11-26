@@ -174,12 +174,10 @@ new class extends Component {
                     '{{ $this->sprite->slug ?? $this->sprite->name }}': preload('{{ $this->sprite->url }}'),
                 ]</x-code-block>
             </div>
-            @if ($this->pixels)
-                <div>
-                    <h2>{{ __('Load in prod') }}</h2>
-                    <x-code-block language="js">{{ $this->sprite->pretty }}</x-code-block>
-                </div>
-            @endif
+            <div>
+                <h2>{{ __('Load in prod') }}</h2>
+                <x-code-block language="js">{{ $this->sprite->pretty }}</x-code-block>
+            </div>
             <div>
                 <h2>{{ __('Use') }}</h2>
                 <x-code-block language="js">spr('{{ $this->sprite->slug ?? $this->sprite->name }}', 15, 20)</x-code-block>
@@ -194,7 +192,7 @@ new class extends Component {
                             type="text"
                             value="{{ $this->sprite->slug }}"
                             wire:keyup="changeSlug($event.target.value)"
-                        />
+                        >
                         @if(!empty($this->errors['slug']))
                             <div class="text-red">{{ $this->errors['slug'] }}</div>
                         @endif
