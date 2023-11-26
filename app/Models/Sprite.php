@@ -67,6 +67,7 @@ class Sprite extends Model
                 'user' => $this->project->user->segment,
                 'project' => $this->project->segment,
                 'asset' => $this->segment,
+                'type' => 'spr',
             ])
         );
     }

@@ -9,7 +9,7 @@ use App\Models\User;
 
 class ShowAssetDataResponder
 {
-    public function __invoke(User $user, Project $project, Sprite|Sound $asset)
+    public function __invoke(User $user, Project $project, Sprite|Sound $asset): array
     {
         if ($asset instanceof Sprite) {
             return [

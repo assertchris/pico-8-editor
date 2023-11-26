@@ -20,26 +20,30 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
         });
 
-        Route::bind('asset', function (string $value) {
+        Route::bind('asset', function (string $value, \Illuminate\Routing\Route $route) {
             $project_id = request()->project_id;
 
-            if ($asset = Sprite::where('slug', '=', $value)->where('project_id', '=', $project_id)->first()) {
-                return $asset;
+            if ($route->parameter('type') === 'spr') {
+                if ($asset = Sprite::where('slug', '=', $value)->where('project_id', '=', $project_id)->first()) {
+                    return $asset;
+                }
+
+                if ($asset = Sprite::where('id', '=', $value)->where('project_id', '=', $project_id)->first()) {
+                    return $asset;
+                }
             }
 
-            if ($asset = Sound::where('slug', '=', $value)->where('project_id', '=', $project_id)->first()) {
-                return $asset;
+            if ($route->parameter('type') === 'sfx') {
+                if ($asset = Sound::where('slug', '=', $value)->where('project_id', '=', $project_id)->first()) {
+                    return $asset;
+                }
+
+                if ($asset = Sound::where('id', '=', $value)->where('project_id', '=', $project_id)->first()) {
+                    return $asset;
+                }
             }
 
-            if ($asset = Sprite::where('id', '=', $value)->where('project_id', '=', $project_id)->first()) {
-                return $asset;
-            }
-
-            if ($asset = Sound::where('id', '=', $value)->where('project_id', '=', $project_id)->first()) {
-                return $asset;
-            }
-
-            logger('asset not found with '.$value);
+            logger('asset not found with ' . $value);
 
             abort(404);
         });

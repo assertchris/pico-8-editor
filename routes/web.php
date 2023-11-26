@@ -26,7 +26,7 @@ Route::get('/auth/redirect-to-github', RedirectToGithubResponder::class)
 Route::get('/auth/handle-github-response', HandleGithubResponseResponder::class)
     ->name('auth.handle-github-response');
 
-Route::get('/{user}/{project}/{asset}.json', ShowAssetDataResponder::class)
+Route::get('/{user}/{project}/{asset}.{type}.json', ShowAssetDataResponder::class)
     ->name('projects.assets.show-data');
 
 Route::get('/{user}/{project}', ShowProjectResponder::class)

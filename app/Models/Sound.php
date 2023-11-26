@@ -62,6 +62,7 @@ class Sound extends Model
                 'user' => $this->project->user->segment,
                 'project' => $this->project->segment,
                 'asset' => $this->segment,
+                'type' => 'sfx',
             ])
         );
     }
