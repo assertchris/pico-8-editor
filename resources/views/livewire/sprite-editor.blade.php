@@ -105,7 +105,6 @@ new class extends Component {
 };
 
 ?>
-
 <div
     x-data="{
         colors: @entangle('colors'),
@@ -113,7 +112,6 @@ new class extends Component {
         pixels: @entangle('pixels'),
         size: @entangle('size').live,
         flags: @entangle('flags').live,
-        mode: 'paint',
         currentButton: null,
         @if (user() && user()->is($this->sprite->project->user))
         mousedown(event, x, y) {

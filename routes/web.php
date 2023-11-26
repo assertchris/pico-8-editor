@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// DEBUG
+auth()->login(\App\Models\User::first());
+
 Route::get('/auth/redirect-to-github', RedirectToGithubResponder::class)
     ->name('auth.redirect-to-github');
 
@@ -28,4 +31,5 @@ Route::get('/{user}/{project}/{asset}.json', ShowAssetDataResponder::class)
 
 Route::get('/{user}/{project}', ShowProjectResponder::class)
     ->name('projects.show-project')
-    ->where('project', '\b(?!dashboard\b)[0-9a-zA-Z-]+\b');
+    ->where('project', '\b(?!dashboard\b)[0-9a-zA-Z-]+\b')
+    ->middleware('auth');

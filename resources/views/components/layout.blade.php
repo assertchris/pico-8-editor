@@ -10,6 +10,10 @@
     <body>
         {{ $slot }}
         <livewire:scripts />
+        <script type="module">
+            import { Engine } from '{{ env('FLOATY_URL') }}/engine.mjs';
+            window.Engine = Engine;
+        </script>
         @vite('resources/js/app.js')
     </body>
 </html>

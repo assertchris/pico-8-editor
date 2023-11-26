@@ -288,5 +288,11 @@ new class extends Component {
                 :sprite="$this->editing"
             />
         @endif
+        @if ($this->editing instanceof \App\Models\Sound)
+            <livewire:sound-editor
+                wire:key="sound-editor-{{ $this->editing->id }}"
+                :sound="$this->editing"
+            />
+        @endif
     </div>
 </div>
