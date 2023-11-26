@@ -16,6 +16,14 @@ new class extends Component
     public function mount(): void
     {
         for ($i = 0; $i < 32; $i++) {
+            if (!$this->sound->notes) {
+                $this->sound->notes = $this->notes;
+            }
+
+            if (!$this->sound->length) {
+                $this->sound->length = $this->length;
+            }
+
             if (!isset($this->sound->notes[$i])) {
                 $this->notes[$i] = [0, 0.8, $this->instrument];
             } else {
