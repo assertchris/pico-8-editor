@@ -48,20 +48,11 @@ new class extends Component {
         for ($y = 0; $y < $this->size; $y++) {
             for ($x = 0; $x < $this->size; $x++) {
                 $address = $this->address($x, $y);
-                $this->pixels[$address] = $this->sprite->pixels[$address] ?? -1;
+                $this->pixels[$address] = $this->sprite->pixels[$address];
             }
         }
 
-        $this->flags = $this->sprite->flags ?? [
-            0 => false,
-            1 => false,
-            2 => false,
-            3 => false,
-            4 => false,
-            5 => false,
-            6 => false,
-            7 => false,
-        ];
+        $this->flags = $this->sprite->flags;
     }
 
     private function address(int $x, int $y): int

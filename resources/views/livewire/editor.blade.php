@@ -18,6 +18,8 @@ new class extends Component {
     {
         $this->project->sprites()->create([
             'name' => $name,
+            'pixels' => array_fill(0, 8 * 8, -1),
+            'flags' => array_fill(0, 8, false),
         ]);
     }
 
@@ -25,6 +27,8 @@ new class extends Component {
     {
         $this->project->sounds()->create([
             'name' => $name,
+            'length' => 1,
+            'notes' => array_fill(0, 32, [0, 0.8, 1]),
         ]);
     }
 

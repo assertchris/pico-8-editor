@@ -16,19 +16,7 @@ new class extends Component
     public function mount(): void
     {
         for ($i = 0; $i < 32; $i++) {
-            if (empty($this->sound->notes)) {
-                $this->sound->notes = $this->notes;
-            }
-
-            if (empty($this->sound->length)) {
-                $this->sound->length = $this->length;
-            }
-
-            if (empty($this->sound->notes[$i])) {
-                $this->notes[$i] = [0, 0.8, $this->instrument];
-            } else {
-                $this->notes[$i] = $this->sound->notes[$i];
-            }
+            $this->notes[$i] = $this->sound->notes[$i];
         }
     }
 
@@ -47,6 +35,7 @@ new class extends Component
         notes: @entangle('notes').live,
         instrument: @entangle('instrument').live,
         currentButton: null,
+        resetTimer: null,
         frequencyClear(event, i) {
             event.preventDefault();
             this.notes[i][0] = 0;
@@ -66,6 +55,7 @@ new class extends Component
         },
         frequencyMousemove(event, i) {
             if (this.currentButton) {
+                clearTimeout(this.resetTimer);
                 var percent = 100 - Math.round((event.pageY - event.target.offsetTop) / 400 * 100);
                 this.notes[i][0] = percent;
             }
@@ -89,6 +79,7 @@ new class extends Component
         },
         volumeMousemove(event, i) {
             if (this.currentButton) {
+                clearTimeout(this.resetTimer);
                 var percent = 100 - Math.round((event.pageY - event.target.offsetTop) / 100 * 100);
                 this.notes[i][1] = percent / 100;
             }
@@ -120,9 +111,15 @@ new class extends Component
 
             instance.start(options);
         },
+        reset() {
+            this.resetTimer = setTimeout(() => this.currentButton = null, 1000 * 2.5);
+        },
     }"
 >
-    <div class="flex flex-col h-[500px] w-2/3 select-text space-y-4">
+    <div
+        class="flex flex-col h-[500px] w-2/3 select-text space-y-4"
+        x-on:mouseup="reset"
+    >
         <div class="flex flex-row min-h-[400px] w-full">
             @for ($i = 0; $i < 32; $i++)
                 <div
