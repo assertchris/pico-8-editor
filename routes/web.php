@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // DEBUG
-auth()->login(\App\Models\User::first());
+// auth()->login(\App\Models\User::first());
 
 Route::get('/auth/redirect-to-github', RedirectToGithubResponder::class)
     ->name('auth.redirect-to-github');
