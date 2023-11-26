@@ -16,15 +16,15 @@ new class extends Component
     public function mount(): void
     {
         for ($i = 0; $i < 32; $i++) {
-            if (!$this->sound->notes) {
+            if (empty($this->sound->notes)) {
                 $this->sound->notes = $this->notes;
             }
 
-            if (!$this->sound->length) {
+            if (empty($this->sound->length)) {
                 $this->sound->length = $this->length;
             }
 
-            if (!isset($this->sound->notes[$i])) {
+            if (empty($this->sound->notes[$i])) {
                 $this->notes[$i] = [0, 0.8, $this->instrument];
             } else {
                 $this->notes[$i] = $this->sound->notes[$i];
@@ -166,21 +166,23 @@ new class extends Component
         <div class="flex flex-col w-full">
             <div class="instance hidden"></div>
             <button x-on:click="play">play</button>
-            <div>
-                <h2>{{ __('Preload in dev') }}</h2>
-                <x-code-block language="js">var sounds = [
-                    // ...
-                    '{{ $this->sound->slug ?? $this->sound->name }}': preload('{{ $this->sound->url }}'),
-                ]</x-code-block>
-            </div>
-            <div>
-                <h2>{{ __('Load in prod') }}</h2>
-                <x-code-block language="js">{{ $this->sound->pretty }}</x-code-block>
-            </div>
-            <div>
-                <h2>{{ __('Use') }}</h2>
-                <x-code-block language="js">sfx('{{ $this->sound->slug ?? $this->sound->name }}', 15, 20)</x-code-block>
-            </div>
+            @if (!empty($this->notes))
+                <div>
+                    <h2>{{ __('Preload in dev') }}</h2>
+                    <x-code-block language="js">var sounds = [
+                        // ...
+                        '{{ $this->sound->slug ?? $this->sound->name }}': preload('{{ $this->sound->url }}'),
+                    ]</x-code-block>
+                </div>
+                <div>
+                    <h2>{{ __('Load in prod') }}</h2>
+                    <x-code-block language="js">{{ $this->sound->pretty }}</x-code-block>
+                </div>
+                <div>
+                    <h2>{{ __('Use') }}</h2>
+                    <x-code-block language="js">sfx('{{ $this->sound->slug ?? $this->sound->name }}', 15, 20)</x-code-block>
+                </div>
+            @endif
         </div>
     </div>
 </div>
