@@ -21,6 +21,8 @@ new class extends Component
         for ($i = 0; $i < 32; $i++) {
             $this->notes[$i] = $this->sound->notes[$i];
         }
+
+        $this->length = $this->sound->length;
     }
 
     public function save(): void
@@ -47,6 +49,25 @@ new class extends Component
             $this->sound->save();
         } else {
             $this->errors['slug'] = __('This slug is already taken');
+        }
+    }
+
+    public function changeLength(int $newLength): void
+    {
+        $validator = validator()->make([
+            'newLength' => $newLength,
+        ], [
+            'newLength' => ['numeric', 'min:1'],
+        ]);
+
+        $this->errors['length'] = null;
+
+        if (!$validator->fails()) {
+            $this->length = $newLength;
+            $this->sound->length = $newLength;
+            $this->sound->save();
+        } else {
+            $this->errors['length'] = __('The length must be at least 1');
         }
     }
 };
@@ -247,6 +268,19 @@ new class extends Component
                             x-on:click="instrument = 3"
                             x-bind:class="{'bg-blue-300': instrument == 3}"
                         >triangle</button>
+                    </div>
+                </div>
+                <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
+                    <div class="flex flex-col">
+                        {{ __('Note Length') }}:
+                        <input
+                            type="number"
+                            value="{{ $this->length }}"
+                            wire:change="changeLength($event.target.value)"
+                        >
+                        @if(!empty($this->errors['length']))
+                            <div class="text-red">{{ $this->errors['length'] }}</div>
+                        @endif
                     </div>
                 </div>
             @endif
