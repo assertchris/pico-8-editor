@@ -154,6 +154,7 @@ new class extends Component
                 update: () => {},
                 draw: () => {},
                 target: document.querySelector('.instance'),
+                startAudio: true,
             };
 
             instance.start(options);
