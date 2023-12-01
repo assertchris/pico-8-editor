@@ -154,10 +154,11 @@ new class extends Component
                 update: () => {},
                 draw: () => {},
                 target: document.querySelector('.instance'),
-                startAudio: true,
             };
 
-            instance.start(options);
+            instance.enableAudio().then(() => {
+                instance.start(options);
+            });
         },
         reset() {
             this.resetTimer = setTimeout(() => this.currentButton = null, 1000 * 2.5);
