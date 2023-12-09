@@ -126,7 +126,7 @@ new class extends Component
         volumeMousemove(event, i) {
             if (this.currentButton) {
                 clearTimeout(this.resetTimer);
-                var percent = 100 - Math.round((event.pageY - event.target.offsetTop) / 100 * 100);
+                var percent = 100 - Math.round((event.pageY - event.target.offsetTop) / 200 * 100);
                 this.notes[i][1] = percent / 100;
             }
         },
@@ -168,7 +168,7 @@ new class extends Component
 >
     <div class="flex w-full h-full p-4 pl-0 space-x-4 items-start">
         <div
-            class="flex flex-col h-[500px] w-2/3 select-text space-y-4"
+            class="flex flex-col h-[600px] w-2/3 select-text space-y-4"
             x-on:mouseup="reset"
         >
             <div class="flex flex-row min-h-[400px] w-full">
@@ -201,7 +201,7 @@ new class extends Component
                     </div>
                 @endfor
             </div>
-            <div class="flex flex-row min-h-[100px] w-full">
+            <div class="flex flex-row min-h-[200px] w-full">
                 @for ($i = 0; $i < 32; $i++)
                     <div
                         @if (user() && user()->is($this->sound->project->user))
