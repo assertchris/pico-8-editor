@@ -28,9 +28,10 @@ class Kernel extends HttpKernel
      */
     public function getMiddleware(): array
     {
-        return array_merge($this->middleware, [
+        return [
+            ...$this->middleware,
             env('TORCHLIGHT_ENABLED') ? \Torchlight\Middleware\RenderTorchlight::class : null,
-        ]);
+        ];
     }
 
     /**
