@@ -11,7 +11,7 @@
         {{ $slot }}
         <livewire:scripts />
         <script type="module">
-            import { Engine } from '{{ env('FLOATY_URL') }}/engine-v1.js';
+            import { Engine } from '{{ env('FLOATY_URL') }}/engine-v1.js?t={{ now()->timestamp }}';
             window.Engine = Engine;
         </script>
         @vite('resources/js/app.js')
