@@ -52,7 +52,6 @@ class Sprite extends Model
     protected $appends = [
         'url',
         'segment',
-        'pretty',
     ];
 
     public function project(): BelongsTo
@@ -77,71 +76,5 @@ class Sprite extends Model
         return new Attribute(
             get: fn () => $this->slug ?? $this->id
         );
-    }
-
-    public function pretty(): Attribute
-    {
-        return new Attribute(
-            get: function () {
-                $segment = $this->slug ?? $this->name;
-
-                $pixels = $this->pixels;
-                $flags = $this->flags;
-
-                if ($pixels == null || count($pixels) < 1) {
-                    $pixels = [];
-
-                    for ($y = 0; $y < $this->size; $y++) {
-                        for ($x = 0; $x < $this->size; $x++) {
-                            $pixels[$this->address($x, $y)] = -1;
-                        }
-                    }
-                }
-
-                if ($flags == null || count($flags) < 1) {
-                    $flags = [];
-
-                    for ($i = 0; $i < $this->size; $i++) {
-                        $flags[$i] = false;
-                    }
-                }
-
-                $script = "var sprites = [
-                    // ...
-                    '{$segment}': [
-                        [";
-
-                for ($y = 0; $y < $this->size; $y++) {
-                    $script .= "\n";
-
-                    for ($x = 0; $x < $this->size; $x++) {
-                        $color = $pixels[$this->address($x, $y)];
-                        $script .= " {$color},";
-                    }
-                }
-
-                $script .= '
-                                ], [
-                            ';
-
-                for ($i = 0; $i < count($flags); $i++) {
-                    $flag = $flags[$i] ? 'true' : 'false';
-                    $script .= "{$flag}, ";
-                }
-
-                $script .= '
-                        ],
-                        ';
-
-                $script .= '];';
-
-                return $script;
-            }
-        );
-    }
-
-    private function address(int $x, int $y): int
-    {
-        return ($y * (int) $this->size) + $x;
     }
 }

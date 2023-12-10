@@ -11,3 +11,10 @@ if (! function_exists('user')) {
         return $user;
     }
 }
+
+if (! function_exists('pixel_address')) {
+    function pixel_address(int $size, int $x, int $y): int
+    {
+        return ($y * $size) + $x;
+    }
+}

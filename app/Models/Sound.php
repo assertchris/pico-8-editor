@@ -47,7 +47,8 @@ class Sound extends Model
     ];
 
     protected $appends = [
-        'pretty',
+        'url',
+        'segment',
     ];
 
     public function project(): BelongsTo
@@ -71,33 +72,6 @@ class Sound extends Model
     {
         return new Attribute(
             get: fn () => $this->slug ?? $this->id
-        );
-    }
-
-    public function pretty(): Attribute
-    {
-        return new Attribute(
-            get: function() {
-                $segment = $this->slug ?? $this->name;
-
-                $script = "var sounds = {
-                    // ...
-                    '{$segment}': [";
-
-                $script .= "
-                        {$this->length},";
-
-                for ($i = 0; $i < 32; $i++) {
-                    $script .= "
-                    [{$this->notes[$i][0]}, {$this->notes[$i][1]}, {$this->notes[$i][2]}],";
-                }
-
-                $script .= "
-                    ],
-                };";
-
-                return $script;
-            }
         );
     }
 }

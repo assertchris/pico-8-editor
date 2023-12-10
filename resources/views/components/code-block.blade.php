@@ -1,8 +1,12 @@
 @props([
     'language',
 ])
-@if (env('TORCHLIGHT_ENABLED'))
-    <x-torchlight-code :language="$language">{{ $slot }}</x-torchlight-code>
-@else
-    <code class="text-xs whitespace-pre-line w-full overflow-x-scroll">{{ $slot }}</code>
-@endif
+<div class="text-xs">
+    @php
+        print \Spatie\ShikiPhp\Shiki::highlight(
+            code: preg_replace('/<!--(.|\s)*?-->/', '', $slot),
+            language: $language,
+            theme: 'github-light',
+        );
+    @endphp
+</div>

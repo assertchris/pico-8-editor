@@ -47,17 +47,12 @@ new class extends Component {
     {
         for ($y = 0; $y < $this->size; $y++) {
             for ($x = 0; $x < $this->size; $x++) {
-                $address = $this->address($x, $y);
+                $address = pixel_address($this->size, $x, $y);
                 $this->pixels[$address] = $this->sprite->pixels[$address];
             }
         }
 
         $this->flags = $this->sprite->flags;
-    }
-
-    private function address(int $x, int $y): int
-    {
-        return ($y * $this->size) + $x;
     }
 
     public function save(): void
@@ -167,20 +162,19 @@ new class extends Component {
                     @endfor
                 @endfor
             </div>
-            <div>
-                <h2>{{ __('Preload in dev') }}</h2>
-                <x-code-block language="js">var sprites = [
-                    // ...
-                    '{{ $this->sprite->slug ?? $this->sprite->name }}': preload('{{ $this->sprite->url }}'),
-                ]</x-code-block>
-            </div>
-            <div>
-                <h2>{{ __('Load in prod') }}</h2>
-                <x-code-block language="js">{{ $this->sprite->pretty }}</x-code-block>
-            </div>
-            <div>
-                <h2>{{ __('Use') }}</h2>
-                <x-code-block language="js">spr('{{ $this->sprite->slug ?? $this->sprite->name }}', 15, 20)</x-code-block>
+            <div class="flex flex-col w-full">
+                <div>
+                    <h2>{{ __('Preload in dev') }}</h2>
+                    <x-code-block language="js">@include('snippets.sprites.load-in-dev')</x-code-block>
+                </div>
+                <div>
+                    <h2>{{ __('Load in prod') }}</h2>
+                    <x-code-block language="js">@include('snippets.sprites.load-in-prod')</x-code-block>
+                </div>
+                <div>
+                    <h2>{{ __('Use') }}</h2>
+                    <x-code-block language="js">@include('snippets.sprites.use')</x-code-block>
+                </div>
             </div>
         </div>
         @if (user() && user()->is($this->sprite->project->user))

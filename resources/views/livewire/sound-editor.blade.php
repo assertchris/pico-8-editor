@@ -226,18 +226,15 @@ new class extends Component
             <div class="flex flex-col w-full">
                 <div>
                     <h2>{{ __('Preload in dev') }}</h2>
-                    <x-code-block language="js">var sounds = [
-                        // ...
-                        '{{ $this->sound->slug ?? $this->sound->name }}': preload('{{ $this->sound->url }}'),
-                        ]</x-code-block>
+                    <x-code-block language="js">@include('snippets.sounds.load-in-dev')</x-code-block>
                 </div>
                 <div>
                     <h2>{{ __('Load in prod') }}</h2>
-                    <x-code-block language="js">{{ $this->sound->pretty }}</x-code-block>
+                    <x-code-block language="js">@include('snippets.sounds.load-in-prod')</x-code-block>
                 </div>
                 <div>
                     <h2>{{ __('Use') }}</h2>
-                    <x-code-block language="js">sfx('{{ $this->sound->slug ?? $this->sound->name }}', 15, 20)</x-code-block>
+                    <x-code-block language="js">@include('snippets.sounds.use')</x-code-block>
                 </div>
             </div>
         </div>
