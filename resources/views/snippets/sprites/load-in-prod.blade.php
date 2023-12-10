@@ -1,9 +1,6 @@
-@php
-    $key = $this->sprite->slug ?? $this->sprite->name;
-@endphp
 var sprites = {
     // ...
-    '{{ $key }}': [
+    '{{ $this->sprite->key }}': [
         [
             @for ($y = 0; $y < $this->sprite->size; $y++)@for ($x = 0; $x < $this->sprite->size; $x++){{ str_pad($this->sprite->pixels[pixel_address($this->sprite->size, $x, $y)], 2, ' ', STR_PAD_LEFT) }}, @endfor
             @endfor

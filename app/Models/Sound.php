@@ -49,6 +49,7 @@ class Sound extends Model
     protected $appends = [
         'url',
         'segment',
+        'key',
     ];
 
     public function project(): BelongsTo
@@ -72,6 +73,13 @@ class Sound extends Model
     {
         return new Attribute(
             get: fn () => $this->slug ?? $this->id
+        );
+    }
+
+    public function key(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->slug ?? $this->name
         );
     }
 }
