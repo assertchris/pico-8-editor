@@ -16,6 +16,10 @@ new class extends Component
 
     public array $errors = [];
 
+    public bool $snapToNotes = true;
+
+    public bool $snapToSharps = true;
+
     public function mount(): void
     {
         for ($i = 0; $i < 32; $i++) {
@@ -80,6 +84,37 @@ new class extends Component
         instrument: @entangle('instrument').live,
         currentButton: null,
         resetTimer: null,
+        snapToNotes: @entangle('snapToNotes').live,
+        snapToSharps: @entangle('snapToSharps').live,
+        minFrequency: {{ config('floaty.frequencies.min') }},
+        maxFrequency: {{ config('floaty.frequencies.max') }},
+        noteFrequencies: {{ json_encode(config('floaty.notes')) }},
+        init() {
+            this.updatePercentages();
+            $watch('snapToNotes', () => this.updatePercentages());
+            $watch('snapToSharps', () => this.updatePercentages());
+        },
+        updatePercentages() {
+            this.percentages = [];
+
+            var diff = this.maxFrequency - this.minFrequency;
+
+            for (var i = 0; i < this.noteFrequencies.length; i++) {
+                var frequency = this.noteFrequencies[i][1];
+
+                if (frequency > this.maxFrequency) {
+                    continue;
+                }
+
+                if (!this.snapToSharps && this.noteFrequencies[i][2]) {
+                    continue;
+                }
+
+                var percentage = (frequency / diff) * 100;
+
+                this.percentages.push(percentage);
+            }
+        },
         @if (user() && user()->is($this->sound->project->user))
         frequencyClear(event, i) {
             event.preventDefault();
@@ -99,11 +134,20 @@ new class extends Component
             this.frequencyMousemove(event, i)
         },
         frequencyMousemove(event, i) {
-            if (this.currentButton) {
-                clearTimeout(this.resetTimer);
-                var percent = 100 - Math.round((event.pageY - event.target.offsetTop) / 400 * 100);
+            clearTimeout(this.resetTimer);
+
+            if (this.currentButton === 'left') {
+                var percent = 100 - (event.pageY - event.target.offsetTop) / 400 * 100;
+
+                if (this.snapToNotes) {
+                    percent = window.closest(percent, this.percentages);
+                }
+
                 this.notes[i][0] = percent;
                 this.notes[i][2] = this.instrument;
+            }
+            else if (this.currentButton === 'right') {
+                this.notes[i][0] = 0;
             }
         },
         volumeClear(event, i) {
@@ -124,10 +168,14 @@ new class extends Component
             this.volumeMousemove(event, i)
         },
         volumeMousemove(event, i) {
-            if (this.currentButton) {
-                clearTimeout(this.resetTimer);
-                var percent = 100 - Math.round((event.pageY - event.target.offsetTop) / 200 * 100);
+            clearTimeout(this.resetTimer);
+
+            if (this.currentButton === 'left') {
+                var percent = 100 - (event.pageY - event.target.offsetTop) / 200 * 100;
                 this.notes[i][1] = percent / 100;
+            }
+            else if (this.currentButton === 'right') {
+                this.notes[i][1] = 0;
             }
         },
         stop() {
@@ -286,6 +334,25 @@ new class extends Component
                         @if(!empty($this->errors['length']))
                             <div class="text-red">{{ $this->errors['length'] }}</div>
                         @endif
+                    </div>
+                </div>
+                <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
+                    <div class="flex flex-col">
+                        {{ __('Snapping') }}:
+                        <label>
+                            <input
+                                type="checkbox"
+                                x-model="snapToNotes"
+                            >
+                            {{ __('Snap To Notes') }}
+                        </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                x-model="snapToSharps"
+                            >
+                            {{ __('Enable Sharp Notes') }}
+                        </label>
                     </div>
                 </div>
             @endif
