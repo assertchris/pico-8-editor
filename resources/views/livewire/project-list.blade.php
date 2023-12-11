@@ -16,7 +16,7 @@ new class extends Component
 };
 
 ?>
-<ul class="flex flex-col [&_li]:flex space-x-4 px-4 py-3">
+<ul class="flex flex-col [&_li]:flex space-y-4 px-4 py-3">
     @foreach ($projects as $project)
         <li>
             <a
