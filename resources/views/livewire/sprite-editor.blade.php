@@ -163,18 +163,18 @@ new class extends Component {
                 @endfor
             </div>
             <div class="flex flex-col w-full">
-                <div>
-                    <h2>{{ __('Preload in dev') }}</h2>
+                <details>
+                    <summary>{{ __('Preload in development (dynamic)') }}</summary>
                     <x-code-block language="js">@include('snippets.sprites.load-in-dev')</x-code-block>
-                </div>
-                <div>
-                    <h2>{{ __('Load in prod') }}</h2>
+                </details>
+                <details>
+                    <summary>{{ __('Load in production (static)') }}</summary>
                     <x-code-block language="js">@include('snippets.sprites.load-in-prod')</x-code-block>
-                </div>
-                <div>
-                    <h2>{{ __('Use') }}</h2>
+                </details>
+                <details>
+                    <summary>{{ __('Use in code') }}</summary>
                     <x-code-block language="js">@include('snippets.sprites.use')</x-code-block>
-                </div>
+                </details>
             </div>
         </div>
         @if (user() && user()->is($this->sprite->project->user))

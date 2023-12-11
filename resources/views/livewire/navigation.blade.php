@@ -32,24 +32,38 @@ new class extends Component
     <ul class="flex flex-row [&_li]:flex space-x-4 px-4 py-3">
         @guest
             <li>
-                <a href="{{ route('auth.redirect-to-github') }}">
+                <a
+                    href="{{ route('auth.redirect-to-github') }}"
+                    class="underline text-blue-500"
+                >
                     {{ __('Login with GitHub') }}
                 </a>
             </li>
         @endguest
         @auth
             <li>
-                <a href="{{ route('pages.dashboard') }}">
+                <a
+                    href="{{ route('pages.dashboard') }}"
+                    class="underline text-blue-500"
+                >
                     {{ __('Dashboard') }}
                 </a>
             </li>
             <li>
-                <a href="#" wire:click.prevent="create">
+                <a
+                    href="#"
+                    wire:click.prevent="create"
+                    class="underline text-blue-500"
+                >
                     {{ __('Create project') }}
                 </a>
             </li>
             <li>
-                <a href="#" wire:click.prevent="logout">
+                <a
+                    href="#"
+                    wire:click.prevent="logout"
+                    class="underline text-blue-500"
+                >
                     {{ __('Logout') }}
                 </a>
             </li>

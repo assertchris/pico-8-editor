@@ -272,23 +272,28 @@ new class extends Component
                 @endfor
             </div>
             <div class="flex flex-col w-full">
-                <div>
-                    <h2>{{ __('Preload in dev') }}</h2>
+                <details>
+                    <summary>{{ __('Preload in development (dynamic)') }}</summary>
                     <x-code-block language="js">@include('snippets.sounds.load-in-dev')</x-code-block>
-                </div>
-                <div>
-                    <h2>{{ __('Load in prod') }}</h2>
+                </details>
+                <details>
+                    <summary>{{ __('Load in production (static)') }}</summary>
                     <x-code-block language="js">@include('snippets.sounds.load-in-prod')</x-code-block>
-                </div>
-                <div>
-                    <h2>{{ __('Use') }}</h2>
+                </details>
+                <details>
+                    <summary>{{ __('Use in code') }}</summary>
                     <x-code-block language="js">@include('snippets.sounds.use')</x-code-block>
-                </div>
+                </details>
             </div>
         </div>
         <div class="flex flex-col w-1/3 space-y-4">
-            <div class="instance hidden"></div>
-            <button x-on:click="play">play</button>
+            <div hidden class="instance"></div>
+            <button
+                x-on:click="play"
+                class="bg-gray-100 py-3 px-2"
+            >
+                play
+            </button>
             @if (user() && user()->is($this->sound->project->user))
                 <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
                     <div class="flex flex-col">

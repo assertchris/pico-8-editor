@@ -16,13 +16,15 @@ new class extends Component
 };
 
 ?>
-<div class="flex flex-col">
+<ul class="flex flex-col [&_li]:flex space-x-4 px-4 py-3">
     @foreach ($projects as $project)
-        <a
-            href="{{ $project->url }}"
-            class="flex w-full"
-        >
-            {{ $project->name }}
-        </a>
+        <li>
+            <a
+                href="{{ $project->url }}"
+                class="flex w-full underline text-blue-500"
+            >
+                {{ $project->name }}
+            </a>
+        </li>
     @endforeach
-</div>
+</ul>
