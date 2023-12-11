@@ -1,7 +1,17 @@
+@import '../../node_modules/nprogress/nprogress.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 pre {
     @apply my-4 rounded overflow-x-auto;
+}
+
+#nprogress .bar {
+    background: #4ade80 !important;
+}
+
+#nprogress .peg {
+    box-shadow: 0 0 10px #4ade80, 0 0 5px #4ade80 !important;
 }

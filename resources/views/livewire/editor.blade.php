@@ -100,22 +100,26 @@ new class extends Component {
 <div
     x-data="{
         addSprite() {
-          var name = prompt('What should we call it?');
-          if (name) {
-            this.$wire.addSprite(name);
-          }
+            var name = prompt('What should we call it?');
+
+            if (name) {
+                this.$wire.addSprite(name);
+            }
         },
         addSound() {
-          var name = prompt('What should we call it?');
-          if (name) {
-            this.$wire.addSound(name);
-          }
+            var name = prompt('What should we call it?');
+
+            if (name) {
+                this.$wire.addSound(name);
+            }
         },
         editSprite(id) {
-          this.$wire.editSprite(id);
+            window.NProgress.start();
+            this.$wire.editSprite(id);
         },
         editSound(id) {
-          this.$wire.editSound(id);
+            window.NProgress.start();
+            this.$wire.editSound(id);
         },
         deleteSprite(id) {
             if (confirm('Are you sure?')) {
@@ -129,12 +133,14 @@ new class extends Component {
         },
         renameSprite(id, oldName) {
             var newName = prompt('What should we call it?', oldName);
+
             if (newName) {
                 this.$wire.renameSprite(id, newName);
             }
         },
         renameSound(id, oldName) {
             var newName = prompt('What should we call it?', oldName);
+
             if (newName) {
                 this.$wire.renameSound(id, newName);
             }

@@ -17,6 +17,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "nprogress": "^0.2.0",
         "shiki": "^0.14.6"
     }
 }

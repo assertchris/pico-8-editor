@@ -93,6 +93,9 @@ new class extends Component
             this.updatePercentages();
             $watch('snapToNotes', () => this.updatePercentages());
             $watch('snapToSharps', () => this.updatePercentages());
+
+            window.NProgress.done();
+            setTimeout(() => window.NProgress.remove(), 500);
         },
         updatePercentages() {
             this.percentages = [];

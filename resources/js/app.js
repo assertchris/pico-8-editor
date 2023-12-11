@@ -15,3 +15,8 @@ window.closest = function(needle, haystack) {
         }
     });
 };
+
+import NProgress from 'nprogress';
+
+window.NProgress = NProgress;
+window.NProgress.configure({ showSpinner: false });

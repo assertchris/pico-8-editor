@@ -45,10 +45,16 @@ new class extends Component {
 
     public function mount(): void
     {
+        $this->size = $this->sprite->size;
+
         for ($y = 0; $y < $this->size; $y++) {
             for ($x = 0; $x < $this->size; $x++) {
                 $address = pixel_address($this->size, $x, $y);
-                $this->pixels[$address] = $this->sprite->pixels[$address];
+                $this->pixels[$address] = $this->sprite->pixels[$address] ?? -1;
+
+                if ($this->pixels[$address] === null) {
+                    $this->pixels[$address] = -1;
+                }
             }
         }
 
@@ -58,6 +64,7 @@ new class extends Component {
     public function save(): void
     {
         $this->sprite->pixels = $this->pixels;
+        $this->sprite->size = $this->size;
         $this->sprite->save();
     }
 
@@ -99,6 +106,11 @@ new class extends Component {
         size: @entangle('size').live,
         flags: @entangle('flags').live,
         currentButton: null,
+        init() {
+            window.NProgress.done();
+            setTimeout(() => window.NProgress.remove(), 500);
+            this.updateSizeInput();
+        },
         @if (user() && user()->is($this->sprite->project->user))
         mousedown(event, x, y) {
             event.preventDefault();
@@ -131,6 +143,23 @@ new class extends Component {
                 this.pixels[this.address(x, y)] = -1;
             }
         },
+        changeSize(i) {
+            this.size = [8, 16, 32][i];
+            this.$wire.save();
+
+            this.updateSizeInput();
+        },
+        updateSizeInput() {
+            this.$refs.size.value = 0;
+
+            if (this.size == 16) {
+                this.$refs.size.value = 1;
+            }
+
+            if (this.size == 32) {
+                this.$refs.size.value = 2;
+            }
+        },
         @endif
         address(x, y) {
             return (y * this.size) + x;
@@ -140,9 +169,9 @@ new class extends Component {
 >
     <div class="flex w-full h-full p-4 pl-0 space-x-4 items-start">
         <div class="flex flex-col w-2/3 space-y-4">
-            <div class="flex grid grid-cols-8 w-full aspect-square pattern-checkered-gray-200/100 pattern-checkered-scale-[2.5] divide-x divide-y divide-blue-200 border-r border-b border-blue-200">
-                @for ($y = 0; $y < 8; $y++)
-                    @for ($x = 0; $x < 8; $x++)
+            <div class="grid grid-cols-{{ $this->size }} w-full aspect-square pattern-checkered-gray-200/100 pattern-checkered-scale-[2.5] divide-x divide-y divide-blue-200 border-r border-b border-blue-200">
+                @for ($y = 0; $y < $this->size; $y++)
+                    @for ($x = 0; $x < $this->size; $x++)
                         <button
                             wire:key="pixel-{{$x}}-{{ $y }}"
                             @if (user() && user()->is($this->sprite->project->user))
@@ -225,6 +254,16 @@ new class extends Component {
                             />
                         @endfor
                     </div>
+                </div>
+                <div class="border border-gray-200 p-2 flex flex-col justify-start space-y-4">
+                    <span>{{ __('Size') }}:</span>
+                    <input
+                        type="range"
+                        min="0"
+                        max="2"
+                        x-ref="size"
+                        x-on:change="changeSize($event.target.value)"
+                    >
                 </div>
             </div>
         @endif
