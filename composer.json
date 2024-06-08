@@ -13,7 +13,7 @@
         "livewire/livewire": "^3.0",
         "livewire/volt": "^1.0",
         "socialiteproviders/github": "^4.1",
-        "spatie/shiki-php": "^1.3"
+        "tempest/highlight": "^2.7"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",

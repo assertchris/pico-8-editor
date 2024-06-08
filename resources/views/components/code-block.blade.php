@@ -1,10 +1,7 @@
 @props([
     'language',
+    'slot',
 ])
-@php
-    print \Spatie\ShikiPhp\Shiki::highlight(
-        code: preg_replace('/<!--(.|\s)*?-->/', '', $slot),
-        language: $language,
-        theme: 'github-light',
-    );
-@endphp
+<pre class="highlight-web-component-wrapper"><code>{!!
+    (new \Tempest\Highlight\Highlighter())->parse(preg_replace('/<!--(.|\s)*?-->/', '', $slot), $language)
+!!}</code></pre>

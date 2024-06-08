@@ -1,3 +1,4 @@
+@import "../../vendor/tempest/highlight/src/Themes/Css/highlight-light-lite.css";
 @import '../../node_modules/nprogress/nprogress.css';
 
 @tailwind base;
@@ -14,4 +15,16 @@ pre {
 
 #nprogress .peg {
     box-shadow: 0 0 10px #4ade80, 0 0 5px #4ade80 !important;
+}
+
+pre {
+    @apply !m-0;
+}
+
+.highlight-web-component-wrapper {
+    @apply text-gray-900 !bg-gray-50 !rounded !p-4;
+}
+
+.highlight-web-component-wrapper code {
+    @apply font-mono leading-loose !p-0 !bg-transparent;
 }

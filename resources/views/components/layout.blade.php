@@ -4,12 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ config('app.name') }}</title>
-        <livewire:styles />
         @vite('resources/css/app.css')
     </head>
     <body>
         {{ $slot }}
-        <livewire:scripts />
         <script type="module">
             import { Engine } from '{{ env('FLOATY_URL') }}/engine-v1.js?t={{ now()->timestamp }}';
             window.Engine = Engine;
